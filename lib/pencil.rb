@@ -11,4 +11,8 @@ class Pencil
   def get_degradation_value
     @degradation_value
   end
+
+  def write_to_paper(text)
+    text
+  end
 end
