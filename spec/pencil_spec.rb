@@ -17,7 +17,7 @@ describe 'pencil' do
     init_text = 'She sells sea shells'
     test_string = ' down by the sea shore'
     paper.set_text(init_text)
-    paper.set_text(pencil.write(test_string))
+    pencil.write(test_string, paper)
 
     expect(paper.get_text).to match(init_text + test_string)
   end
@@ -25,14 +25,12 @@ describe 'pencil' do
   it 'adds text to paper if the paper has no text' do
     paper = Paper.new
     test_string = 'Hello, world!'
-    paper.set_text(pencil.write(test_string))
+    paper.set_text(pencil.write(test_string, paper))
 
     expect(paper.get_text).to match(test_string)
   end
 
   ######Graphite point degradation description########
-
-  describe 'Pencil point degradation'
   it 'sets a value for point degradation for a pencil' do
     pencil_test = Pencil.new(point_degrade_value, length)
 
@@ -74,9 +72,10 @@ describe 'pencil' do
   context 'when writing a character' do
     init_val = 20
     pencil_test = Pencil.new(init_val, 10)
+    paper = Paper.new
     it 'decreases the value for each character printed' do
       string = 'AB c'
-      pencil_test.write(string)
+      pencil_test.write(string, paper)
 
       expect(pencil_test.get_value(:degradation_value)).to eq(init_val - 2 - 2 - 1)
     end
@@ -88,12 +87,12 @@ describe 'pencil' do
       pencil_test = Pencil.new(init_val, 10)
       paper = Paper.new
       string = 'ABCDEFGHIJklmnop'
-      paper.set_text(pencil_test.write(string))
+      pencil_test.write(string, paper)
       sleep 2
 #      expect(paper.get_text).to_not eq(string)
 
       expect(paper.get_text).to_not eq('ABCDEFGHIJklmnop')
-      expect(paper.get_text).to eq('ABCDEFGHIJ      ')
+      expect(paper.get_text).to eq("ABCDEFGHIJ      ")
     end
 
     it 'prints more characters for a pencil with a higher point degradation value than its string input' do
@@ -102,13 +101,15 @@ describe 'pencil' do
       paper_1 = Paper.new
       paper_2 = Paper.new
       string = 'ABCD'
-      paper_1.set_text(pencil_1.write(string))
-      paper_2.set_text(pencil_2.write(string))
+      pencil_1.write(string, paper_1)
+      pencil_2.write(string, paper_2)
 
       expect(paper_1.get_text).to_not eq(paper_2.get_text)
     end
   end
 
+
+  #### Sharpen ######
   context 'when sharpened' do
     init_point_value = 10
     length = 10
@@ -130,11 +131,14 @@ describe 'pencil' do
 
     it 'does not regain its point value if its length is 0' do
       pencil_test = Pencil.new(init_point_value, 2)
+      paper = Paper.new
       3.times {
-        pencil_test.write('ABCDE')
+        pencil_test.write('ABCDE', paper)
         pencil_test.sharpen
       }
       expect(pencil_test.get_value(:degradation_value)).to eq(0)
     end
   end
+
+
 end
