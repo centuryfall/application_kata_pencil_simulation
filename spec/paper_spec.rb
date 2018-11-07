@@ -2,6 +2,7 @@ require './lib/paper.rb'
 
 describe 'paper' do
 
+  #Intiial values
   it 'can contain text' do
     paper = Paper.new
     test_string = "She sells sea shells"
