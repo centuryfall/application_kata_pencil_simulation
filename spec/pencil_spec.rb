@@ -32,4 +32,12 @@ describe 'pencil' do
     pencil.set_degradation_value(point_degrade_value)
     expect(pencil.get_degradation_value).to eq(point_degrade_value)
   end
+  
+    #Writing lowercase text degrades point val by 1 and uppercase text degrades point val by 2
+  
+  #White spaces and newlines do not decrease point value (value does not change)
+  
+  #A pencil with a value of 0 writes white spaces for the remainder of the text
+  
+  #Comparison of higher and lower point values
 end
