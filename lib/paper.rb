@@ -1,11 +1,11 @@
 class Paper
 
   def initialize
-    @paper_text = Array.new
+    @paper_text = String.new
   end
 
   def set_text(string)
-    @paper_text.push(string)
+    @paper_text += string
   end
 
   def get_text
