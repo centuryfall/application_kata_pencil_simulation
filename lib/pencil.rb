@@ -1,12 +1,19 @@
 class Pencil
 
-  def initialize
+  def initialize(init_point_grade, init_length)
+    @max_point_grade = init_point_grade
+    @max_length = init_length
     @values = Hash.new
-    @values[:degradation_value]
+    @values[:degradation_value] = init_point_grade
+    @values[:length] = init_length
   end
 
   def set_degradation_value(val)
     @values[:degradation_value] = val
+  end
+
+  def set_length(val)
+    @values[:length] = val
   end
 
   def get_value(value)
@@ -34,5 +41,10 @@ class Pencil
       decrease_degradation_value(val)
     end
     text
+  end
+
+  def sharpen
+    self.set_length(self.get_value(:length) - 1) unless self.get_value(:length) <= 0
+    self.set_degradation_value(@max_point_grade) unless self.get_value(:length) <= 0
   end
 end
