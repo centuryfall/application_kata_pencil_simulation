@@ -81,7 +81,7 @@ describe 'pencil' do
       expect(pencil_test.get_value(:point_degradation_value)).to eq(init_val - 2 - 2 - 1)
     end
 
-    #Currently it's setting the string input equal to what it should be if the point value is 0
+    #Currently it's setting the string input equal to the string it would become when the point value is 0
     # Should fix that later
     it 'prints blank characters after its point degradation reaches 0' do
       init_val = 20
@@ -90,7 +90,7 @@ describe 'pencil' do
       string = 'ABCDEFGHIJklmnop'
       pencil_test.write(string, paper)
       sleep 2
-#      expect(paper.get_text).to_not eq(string)
+      #expect(paper.get_text).to_not eq(string)
 
       expect(paper.get_text).to_not eq('ABCDEFGHIJklmnop')
       expect(paper.get_text).to eq("ABCDEFGHIJ      ")
@@ -147,7 +147,7 @@ describe 'pencil' do
     paper.set_text(string)
 
     it 'changes the word to an equal number of whitespace characters' do
-      pencil_test.erase('chuck', paper)
+      pencil_test.erase('chuck', paper, 0)
 
       expect(paper.get_text).to eq("How much wood would a woodchuck       if a woodchuck could chuck wood?")
     end
@@ -158,7 +158,7 @@ describe 'pencil' do
       string = "Hello, world!"
       string_to_erase = 'world'
       pencil_test.write(string, paper)
-      pencil_test.erase(string_to_erase, paper)
+      pencil_test.erase(string_to_erase, paper, 0)
 
       expect(pencil_test.get_value(:eraser_degradation_value)).to eq (init_eraser_value - string_to_erase.length)
     end
@@ -170,7 +170,7 @@ describe 'pencil' do
       string = "Hello, world!"
       string_to_erase = 'world'
       pencil_test.write(string, paper)
-      pencil_test.erase(string_to_erase, paper)
+      pencil_test.erase(string_to_erase, paper, 0)
 
       expect(paper.get_text).to_not eq("Hello,      !")
       expect(paper.get_text).to eq("Hello,    ld!")
@@ -183,7 +183,7 @@ describe 'pencil' do
       string = "Hello, world! How are you?"
       string_to_erase = 'How are'
       pencil_test.write(string, paper)
-      pencil_test.erase(string_to_erase, paper)
+      pencil_test.erase(string_to_erase, paper, 0)
 
       expect(pencil_test.get_value(:eraser_degradation_value)).to eq (init_eraser_value - string_to_erase.delete(" ").length)
     end
@@ -195,9 +195,21 @@ describe 'pencil' do
       string = "Hello, world! How\nare you?"
       string_to_erase = "How\nare"
       pencil_test.write(string, paper)
-      pencil_test.erase(string_to_erase, paper)
+      pencil_test.erase(string_to_erase, paper, 0)
 
       expect(pencil_test.get_value(:eraser_degradation_value)).to eq (init_eraser_value - string_to_erase.delete("\n").length)
+    end
+
+    it 'can erase the second instance of text if the text appears twice in a phrase' do
+      init_eraser_value = 20
+      pencil_test = Pencil.new(1000, 10, init_eraser_value)
+      paper = Paper.new
+      string = "Hello, world! Hello, universe! Hello, galaxy!"
+      string_to_erase = "Hello"
+      pencil_test.write(string, paper)
+      pencil_test.erase(string_to_erase, paper, 1)
+
+      expect(paper.get_text).to eq("Hello, world!      , universe! Hello, galaxy!")
     end
   end
 end
