@@ -40,13 +40,30 @@ class Pencil
       text[index] = (self.get_value(:degradation_value) > 0) ? val : " "
       decrease_degradation_value(val)
     end
-    to_paper.set_text(text)
+    to_paper.add_text(text)
   end
 
+  #Sets the graphite point value back to its original max_point_grade, and then decreases the length by 1. Does not reset if length equal to or less than 0.
   def sharpen
     if self.get_value(:length) > 0
       self.set_length(self.get_value(:length) - 1)
       self.set_degradation_value(@max_point_grade)
+    end
+
+    # #Version 1, iteration
+    # def erase(paper, character_range)
+    #   text = paper.get_text
+    #   (character_range[0]..character_range[1]).each {|index| text[index] = " "}
+    #   paper.set_text(text.to_s)
+    # end
+
+    #Version 2, regex
+    def erase(paper, string_to_match)
+      whitespaces = ""
+      string_to_match.length.times {whitespaces << " "}
+      string_to_match = /(\b#{string_to_match}){1}/
+
+      paper.set_text(paper.get_text.sub(string_to_match,whitespaces))
     end
   end
 end
