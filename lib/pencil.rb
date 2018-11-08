@@ -56,19 +56,18 @@ class Pencil
       self.set_degradation_value(:point_degradation_value, @max_point_grade)
     end
 
-    #Replaces characters that are not whitespaces or newlines with a whitespace
+    #Replaces the final sequence of characters given
     # Only replaces characters if the eraser degradation value is greater than zero.
-    # Regex help from https://stackoverflow.com/a/27589356
-    def erase(string_to_match, paper, additional_instance)
+    # Regex help from https://stackoverflow.com/a/16848676
+    def erase(string_to_match, paper)
       whitespaces = ''
       string_to_match.split("").each {|x|
         whitespaces << (self.get_value(:eraser_degradation_value) > 0 &&
-            string_to_match[x] !~ (/^(\s|\n)$/) ? " " : string_to_match[x])
+            string_to_match[x] !~ (/^(\s|\n)$/) ? ' ' : string_to_match[x])
         decrease_degradation_value(:eraser_degradation_value, string_to_match[x])
       }
-      whitespaces.insert(0, '\1') unless additional_instance == 0
-      string_to_match = additional_instance > 0 ? /^((.*?#{string_to_match}.*?){#{additional_instance}})\b#{string_to_match}/ :
-                            /(\b#{string_to_match}){1}/
+
+      string_to_match = /(#{string_to_match})(?!.*\b#{string_to_match})/
       paper.set_text(paper.get_text.sub(string_to_match, whitespaces))
     end
   end
