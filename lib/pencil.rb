@@ -13,10 +13,6 @@ class Pencil
     @values[degrade_type] = val
   end
 
-  def set_length(val)
-    @values[:length] = val
-  end
-
   def get_value(value)
     @values[value]
   end
@@ -25,16 +21,16 @@ class Pencil
   def decrease_degradation_value(degrade_type, given_character)
     decrease_by =
         case degrade_type
-          when :point_degradation_value
-            if given_character =~ (/^[[:upper:]]$/) && given_character !~ (/^(\s|\n)$/)
-              2
-            elsif given_character =~ (/^[[:lower:]]|\S$/) && given_character !~ (/^[[:upper:]]$/) && given_character !~ (/^(\s|\n)$/)
-              1
-            else
-              0
-            end
-          when :eraser_degradation_value
-            given_character !~ (/^(\s|\n)$/) ? 1 : 0
+        when :point_degradation_value
+          if given_character =~ (/^[[:upper:]]$/) && given_character !~ (/^(\s|\n)$/)
+            2
+          elsif given_character =~ (/^[[:lower:]]|\S$/) && given_character !~ (/^[[:upper:]]$/) && given_character !~ (/^(\s|\n)$/)
+            1
+          else
+            0
+          end
+        when :eraser_degradation_value
+          given_character !~ (/^(\s|\n)$/) ? 1 : 0
         end
     self.set_degradation_value(degrade_type, self.get_value(degrade_type) - decrease_by) unless self.get_value(degrade_type) <= 0
   end
@@ -52,7 +48,7 @@ class Pencil
   #Sets the graphite point value back to its original max_point_grade, and then decreases the length by 1. Does not reset if length equal to or less than 0.
   def sharpen
     if self.get_value(:length) > 0
-      self.set_length(self.get_value(:length) - 1)
+      self.set_degradation_value(:length, self.get_value(:length) - 1)
       self.set_degradation_value(:point_degradation_value, @max_point_grade)
     end
 
@@ -66,9 +62,32 @@ class Pencil
             string_to_match[x] !~ (/^(\s|\n)$/) ? ' ' : string_to_match[x])
         decrease_degradation_value(:eraser_degradation_value, string_to_match[x])
       }
-
       string_to_match = /(#{string_to_match})(?!.*\b#{string_to_match})/
       paper.set_text(paper.get_text.sub(string_to_match, whitespaces))
+    end
+
+    def edit_text(replace_with_text, paper)
+      spaces = paper.get_text.index(/\s{2,}/)
+      if spaces.nil?
+
+      else
+        edited_text = paper.get_text
+        replace_index = 0
+        (spaces..(spaces + replace_with_text.length)).each do |index|
+          if (spaces + replace_with_text.length) >= index
+            edited_text += replace_with_text[replace_index]
+          else
+            edited_text[index] = case
+                                 when edited_text[index] =~ (/\w/) && replace_with_text[replace_index] !~ (/^(\s|\n)/)
+                                   '@'
+                                 else
+                                   replace_with_text[replace_index]
+                                 end
+          end
+          replace_index += 1
+        end
+        paper.set_text(edited_text)
+      end
     end
   end
 end

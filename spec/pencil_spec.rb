@@ -200,5 +200,32 @@ describe 'pencil' do
       expect(pencil_test.get_value(:eraser_degradation_value)).to eq (init_eraser_value - string_to_erase.delete("\n").length)
     end
   end
+
+  context 'when editing over existing text' do
+    it 'replaces whitespace characters with the given string' do
+      pencil_test = Pencil.new(1000, 10, 100)
+      paper = Paper.new
+      string = "Buffalo Bill had mad skills"
+      string_to_erase = "Bill"
+      replace_with = "Bob"
+      pencil_test.write(string, paper)
+      pencil_test.erase(string_to_erase, paper)
+      pencil_test.edit_text(replace_with, paper)
+
+      expect(paper.get_text).to eq("Buffalo Bob  had mad skills")
+    end
+
+    it 'changes character collisions to @ characters if the character is not a whitespace or newline' do
+
+    end
+
+    it 'skips newline characters and writes after the newline character' do
+
+    end
+
+    it 'appends to the end of the string if the blank space appears at the end of the string' do
+
+    end
+  end
 end
 
