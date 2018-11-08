@@ -5,6 +5,10 @@ class Paper
   end
 
   def set_text(string)
+    @paper_text = string
+  end
+
+  def add_text(string)
     @paper_text += string
   end
 
