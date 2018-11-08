@@ -69,5 +69,21 @@ class Pencil
 
       paper.set_text(paper.get_text.sub(string_to_match, whitespaces))
     end
+
+    # #Version 1, iteration
+    # def erase(paper, character_range)
+    #   text = paper.get_text
+    #   (character_range[0]..character_range[1]).each {|index| text[index] = " "}
+    #   paper.set_text(text.to_s)
+    # end
+
+    #Version 2, regex
+    def erase(paper, string_to_match)
+      whitespaces = ""
+      string_to_match.length.times {whitespaces << " "}
+      string_to_match = /(\b#{string_to_match}){1}/
+
+      paper.set_text(paper.get_text.sub(string_to_match,whitespaces))
+    end
   end
 end

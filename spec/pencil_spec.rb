@@ -187,7 +187,7 @@ describe 'pencil' do
 
       expect(pencil_test.get_value(:eraser_degradation_value)).to eq (init_eraser_value - string_to_erase.delete(" ").length)
     end
-    
+
     it 'does not degrade its eraser value if the character given in the erase method is a new line' do
       init_eraser_value = 20
       pencil_test = Pencil.new(1000, 10, init_eraser_value)
