@@ -43,7 +43,7 @@ class Pencil
   #Currently it's setting the string input equal to what it should be if the point value is 0
   def write(text, to_paper)
     text.split("").each_with_index do |val, index|
-      text[index] = (self.get_value(:point_degradation_value) > 0) ? val : " "
+      text[index] = (self.get_value(:point_degradation_value) > 0) ? val.sub("\'", "'") : " "
       decrease_degradation_value(:point_degradation_value, val)
     end
     to_paper.add_text(text)
@@ -58,32 +58,18 @@ class Pencil
 
     #Replaces characters that are not whitespaces or newlines with a whitespace
     # Only replaces characters if the eraser degradation value is greater than zero.
-    def erase(string_to_match, paper)
-      whitespaces = ""
+    # Regex help from https://stackoverflow.com/a/27589356
+    def erase(string_to_match, paper, additional_instance)
+      whitespaces = ''
       string_to_match.split("").each {|x|
         whitespaces << (self.get_value(:eraser_degradation_value) > 0 &&
             string_to_match[x] !~ (/^(\s|\n)$/) ? " " : string_to_match[x])
         decrease_degradation_value(:eraser_degradation_value, string_to_match[x])
       }
-      string_to_match = /(\b#{string_to_match}){1}/
-
+      whitespaces.insert(0, '\1') unless additional_instance == 0
+      string_to_match = additional_instance > 0 ? /^((.*?#{string_to_match}.*?){#{additional_instance}})\b#{string_to_match}/ :
+                            /(\b#{string_to_match}){1}/
       paper.set_text(paper.get_text.sub(string_to_match, whitespaces))
-    end
-
-    # #Version 1, iteration
-    # def erase(paper, character_range)
-    #   text = paper.get_text
-    #   (character_range[0]..character_range[1]).each {|index| text[index] = " "}
-    #   paper.set_text(text.to_s)
-    # end
-
-    #Version 2, regex
-    def erase(paper, string_to_match)
-      whitespaces = ""
-      string_to_match.length.times {whitespaces << " "}
-      string_to_match = /(\b#{string_to_match}){1}/
-
-      paper.set_text(paper.get_text.sub(string_to_match,whitespaces))
     end
   end
 end
