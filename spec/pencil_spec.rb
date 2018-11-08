@@ -112,10 +112,8 @@ describe 'pencil' do
   #### Sharpen ######
   context 'when sharpened' do
     init_point_value = 10
-    length = 10
     pencil_test = Pencil.new(init_point_value, length)
     it 'regains its initial point value' do
-      pencil_test = Pencil.new(init_point_value, length)
       pencil_test.set_degradation_value(5)
       pencil_test.sharpen
 
@@ -140,5 +138,17 @@ describe 'pencil' do
     end
   end
 
+  #### Eraser method and eraser degradation #######
+  context 'when erasing characters from paper' do
+    pencil_test = Pencil.new(1000, length)
+    paper = Paper.new
+    string = "How much wood would a woodchuck chuck if a woodchuck could chuck wood?"
+    paper.set_text(string)
+    it 'changes the word to an equal number of whitespace characters' do
+      pencil_test.erase(paper, 'chuck')
+      expect(paper.get_text).to eq("How much wood would a woodchuck       if a woodchuck could chuck wood?")
+    end
+
+  end
 
 end
