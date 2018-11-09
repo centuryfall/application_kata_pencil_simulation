@@ -45,13 +45,13 @@ class Pencil
     end
     to_paper.add_text(text)
   end
-end
 
-#Sets the graphite point value back to its original max_point_grade, and then decreases the length by 1. Does not reset if length equal to or less than 0.
-def sharpen
-  if self.get_value(:length) > 0
-    self.set_degradation_value(:length, self.get_value(:length) - 1)
-    self.set_degradation_value(:point_degradation_value, @max_point_grade)
+  #Sets the graphite point value back to its original max_point_grade, and then decreases the length by 1. Does not reset if length equal to or less than 0.
+  def sharpen
+    if self.get_value(:length) > 0
+      self.set_degradation_value(:length, self.get_value(:length) - 1)
+      self.set_degradation_value(:point_degradation_value, @max_point_grade)
+    end
   end
 
   #Replaces the final sequence of characters given
@@ -89,3 +89,4 @@ def sharpen
     end unless edit_at_index.nil?
   end
 end
+
