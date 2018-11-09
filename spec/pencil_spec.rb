@@ -149,7 +149,11 @@ describe 'pencil' do
       pencil_test.erase('chuck', paper)
 
       expect(paper.get_text).to eq("How much wood would a woodchuck chuck if a woodchuck could       wood?")
+
+      pencil_test.erase('chuck', paper)
+      expect(paper.get_text).to eq("How much wood would a woodchuck       if a woodchuck could       wood?")
     end
+
     it 'degrades the eraser for each character erased' do
       init_eraser_value = 10
       pencil_test = Pencil.new(1000, 10, init_eraser_value)
@@ -172,7 +176,7 @@ describe 'pencil' do
       pencil_test.erase(string_to_erase, paper)
 
       expect(paper.get_text).to_not eq("Hello,      !")
-      expect(paper.get_text).to eq("Hello,    ld!")
+      expect(paper.get_text).to eq("Hello, wo   !")
     end
 
     it 'does not degrade its eraser value if the character given in the erase method is a blank space' do
@@ -200,31 +204,33 @@ describe 'pencil' do
     end
   end
 
+  #Editing text
   context 'when editing over existing text' do
     pencil_test = Pencil.new(1000, 10, 100)
     paper = Paper.new
-    string = "Buffalo Bill had mad skills"
-    string_to_erase = "Bill"
-    replace_with = "Bob"
+    string = "An apple a day keeps the doctor away"
+    string_to_erase = "apple"
+    replace_with = "onion"
     it 'replaces whitespace characters with the given string' do
       pencil_test.write(string, paper)
       pencil_test.erase(string_to_erase, paper)
       pencil_test.edit_text(replace_with, paper)
 
-      expect(paper.get_text).to eq("Buffalo Bob  had mad skills")
+      expect(paper.get_text).to eq("An onion a day keeps the doctor away")
     end
 
     it 'changes character collisions to @ characters if the character is not a whitespace or newline' do
       paper.set_text(string)
-      replace_with = 'Jack Black'
+      replace_with = 'artichoke'
       pencil_test.erase(string_to_erase, paper)
       pencil_test.edit_text(replace_with, paper)
 
-      expect(paper.get_text).to eq("Buffalo Jack @@@c@ad skills")
+      expect(paper.get_text).to eq("An artich@k@ay keeps the doctor away")
     end
 
     it 'skips newline characters and writes after the newline character' do
       string = "Buffalo Bill\nhad mad skills"
+      string_to_erase = 'Bill'
       paper.set_text(string)
       replace_with = 'Bob Blue'
       pencil_test.erase(string_to_erase, paper)
