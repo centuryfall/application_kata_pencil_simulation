@@ -21,22 +21,23 @@ class Pencil
   def decrease_degradation_value(degrade_type, given_character)
     decrease_by =
         case degrade_type
-        when :point_degradation_value
-          if given_character =~ (/^[[:upper:]]$/) && given_character !~ (/^(\s|\n)$/)
-            2
-          elsif given_character =~ (/^[[:lower:]]|\S$/) && given_character !~ (/^[[:upper:]]$/) && given_character !~ (/^(\s|\n)$/)
-            1
-          else
-            0
-          end
-        when :eraser_degradation_value
-          given_character !~ (/^(\s|\n)$/) ? 1 : 0
+          when :point_degradation_value
+            if given_character =~ (/^[[:upper:]]$/) && given_character !~ (/^(\s|\n)$/)
+              2
+            elsif given_character =~ (/^[[:lower:]]|\S$/) && given_character !~ (/^[[:upper:]]$/) && given_character !~ (/^(\s|\n)$/)
+              1
+            else
+              0
+            end
+          when :eraser_degradation_value
+            given_character !~ (/^(\s|\n)$/) ? 1 : 0
         end
     self.set_degradation_value(degrade_type, self.get_value(degrade_type) - decrease_by) unless self.get_value(degrade_type) <= 0
   end
 
   #Writes text per each character. If the point value is 0, character returned is blank.
   #Currently it's setting the string input equal to what it should be if the point value is 0
+  # This is different from editing text.
   def write(text, to_paper)
     text.split("").each_with_index do |val, index|
       text[index] = (self.get_value(:point_degradation_value) > 0) ? val.sub("\'", "'") : " "
@@ -67,27 +68,21 @@ class Pencil
     end
 
     def edit_text(replace_with_text, paper)
-      spaces = paper.get_text.index(/\s{2,}/)
-      if spaces.nil?
-
-      else
+      edit_at_index = paper.get_text.index(/\s{2,}/) + 1
+      begin
         edited_text = paper.get_text
-        replace_index = 0
-        (spaces..(spaces + replace_with_text.length)).each do |index|
-          if (spaces + replace_with_text.length) >= index
-            edited_text += replace_with_text[replace_index]
-          else
-            edited_text[index] = case
-                                 when edited_text[index] =~ (/\w/) && replace_with_text[replace_index] !~ (/^(\s|\n)/)
-                                   '@'
-                                 else
-                                   replace_with_text[replace_index]
-                                 end
-          end
-          replace_index += 1
+        replace_with_text.split("").each_index do |replace_index|
+          edited_text[edit_at_index + replace_index] = case
+                                                         when edited_text[edit_at_index + replace_index] =~ (/\w/) && replace_with_text[replace_index] !~ (/^(\s|\n)/)
+                                                           "@"
+                                                         when edited_text[edit_at_index + replace_index] =~ (/\n/)
+                                                           "\n#{replace_with_text[replace_index]}"
+                                                         else
+                                                           replace_with_text[replace_index]
+                                                       end
         end
         paper.set_text(edited_text)
-      end
+      end unless edit_at_index.nil?
     end
   end
 end
