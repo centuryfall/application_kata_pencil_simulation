@@ -3,7 +3,7 @@ require './lib/paper.rb'
 
 describe 'pencil' do
 
-  #Initialize a base pencil object
+  #Initialize a base pencil object values
   point_degrade_value = 1000
   eraser_degrade_value = 400
   length = 10
@@ -33,9 +33,8 @@ describe 'pencil' do
 
   ######Graphite point degradation description########
   it 'sets a value for point degradation for a pencil' do
-    pencil_test = Pencil.new(point_degrade_value, length, eraser_degrade_value)
-
-    expect(pencil_test.get_value(:point_degradation_value)).to eq(point_degrade_value)
+    pencil = Pencil.new(point_degrade_value, length, eraser_degrade_value)
+    expect(pencil.get_value(:point_degradation_value)).to eq(point_degrade_value)
   end
 
   context 'when determining point degradation' do
@@ -202,12 +201,12 @@ describe 'pencil' do
   end
 
   context 'when editing over existing text' do
+    pencil_test = Pencil.new(1000, 10, 100)
+    paper = Paper.new
+    string = "Buffalo Bill had mad skills"
+    string_to_erase = "Bill"
+    replace_with = "Bob"
     it 'replaces whitespace characters with the given string' do
-      pencil_test = Pencil.new(1000, 10, 100)
-      paper = Paper.new
-      string = "Buffalo Bill had mad skills"
-      string_to_erase = "Bill"
-      replace_with = "Bob"
       pencil_test.write(string, paper)
       pencil_test.erase(string_to_erase, paper)
       pencil_test.edit_text(replace_with, paper)
@@ -216,16 +215,33 @@ describe 'pencil' do
     end
 
     it 'changes character collisions to @ characters if the character is not a whitespace or newline' do
+      paper.set_text(string)
+      replace_with = 'Jack Black'
+      pencil_test.erase(string_to_erase, paper)
+      pencil_test.edit_text(replace_with, paper)
 
+      expect(paper.get_text).to eq("Buffalo Jack @@@c@ad skills")
     end
 
     it 'skips newline characters and writes after the newline character' do
+      string = "Buffalo Bill\nhad mad skills"
+      paper.set_text(string)
+      replace_with = 'Bob Blue'
+      pencil_test.erase(string_to_erase, paper)
+      pencil_test.edit_text(replace_with, paper)
 
+      expect(paper.get_text).to eq("Buffalo Bob \n@@@d mad skills")
     end
 
     it 'appends to the end of the string if the blank space appears at the end of the string' do
+      string = 'Buffalo Bill had mad skillz'
+      paper.set_text(string)
+      string_to_erase = "skillz"
+      replace_with = 'abilities'
+      pencil_test.erase(string_to_erase, paper)
+      pencil_test.edit_text(replace_with, paper)
 
+      expect(paper.get_text).to eq("Buffalo Bill had mad abilities")
     end
   end
 end
-
