@@ -45,44 +45,47 @@ class Pencil
     end
     to_paper.add_text(text)
   end
+end
 
-  #Sets the graphite point value back to its original max_point_grade, and then decreases the length by 1. Does not reset if length equal to or less than 0.
-  def sharpen
-    if self.get_value(:length) > 0
-      self.set_degradation_value(:length, self.get_value(:length) - 1)
-      self.set_degradation_value(:point_degradation_value, @max_point_grade)
-    end
+#Sets the graphite point value back to its original max_point_grade, and then decreases the length by 1. Does not reset if length equal to or less than 0.
+def sharpen
+  if self.get_value(:length) > 0
+    self.set_degradation_value(:length, self.get_value(:length) - 1)
+    self.set_degradation_value(:point_degradation_value, @max_point_grade)
+  end
 
-    #Replaces the final sequence of characters given
-    # Only replaces characters if the eraser degradation value is greater than zero.
-    # Regex help from https://stackoverflow.com/a/16848676
-    def erase(string_to_match, paper)
-      whitespaces = ''
-      string_to_match.split("").each {|x|
-        whitespaces << (self.get_value(:eraser_degradation_value) > 0 &&
-            string_to_match[x] !~ (/^(\s|\n)$/) ? ' ' : string_to_match[x])
-        decrease_degradation_value(:eraser_degradation_value, string_to_match[x])
-      }
-      string_to_match = /(#{string_to_match})(?!.*\b#{string_to_match})/
-      paper.set_text(paper.get_text.sub(string_to_match, whitespaces))
-    end
+  #Replaces the final sequence of characters given
+  # Only replaces characters if the eraser degradation value is greater than zero.
+  # Regex help from https://stackoverflow.com/a/16848676
+  def erase(string_to_match, paper)
+    whitespaces = ''
+    string_to_match.reverse.split("").each {|x|
+      whitespaces << (self.get_value(:eraser_degradation_value) > 0 &&
+          string_to_match[x] !~ (/^(\s|\n)$/) ? ' ' : string_to_match[x])
+      decrease_degradation_value(:eraser_degradation_value, string_to_match[x])
+    }
+    string_to_match = /(#{string_to_match})(?!.*\b#{string_to_match})/
+    @last_erased_location = paper.get_text.index(string_to_match)
+    paper.set_text(paper.get_text.sub(string_to_match, whitespaces.reverse))
+  end
 
-    def edit_text(replace_with_text, paper)
-      edit_at_index = paper.get_text.index(/\s{2,}/) + 1
-      begin
-        edited_text = paper.get_text
-        replace_with_text.split("").each_index do |replace_index|
-          edited_text[edit_at_index + replace_index] = case
-                                                         when edited_text[edit_at_index + replace_index] =~ (/\w/) && replace_with_text[replace_index] !~ (/^(\s|\n)/)
-                                                           "@"
-                                                         when edited_text[edit_at_index + replace_index] =~ (/\n/)
-                                                           "\n#{replace_with_text[replace_index]}"
-                                                         else
-                                                           replace_with_text[replace_index]
-                                                       end
-        end
-        paper.set_text(edited_text)
-      end unless edit_at_index.nil?
-    end
+  #Fills in text at the last erased location on the page.
+  # If the new character added collides with an existing character, an '@' is printed instead.
+  def edit_text(replace_with_text, paper)
+    edit_at_index = @last_erased_location
+    begin
+      edited_text = paper.get_text
+      replace_with_text.split("").each_index do |replace_index|
+        edited_text[edit_at_index + replace_index] = case
+                                                       when edited_text[edit_at_index + replace_index] =~ (/\w/) && replace_with_text[replace_index] !~ (/^(\s|\n)/)
+                                                         "@"
+                                                       when edited_text[edit_at_index + replace_index] =~ (/\n/)
+                                                         "\n#{replace_with_text[replace_index]}"
+                                                       else
+                                                         replace_with_text[replace_index]
+                                                     end
+      end
+      paper.set_text(edited_text)
+    end unless edit_at_index.nil?
   end
 end
