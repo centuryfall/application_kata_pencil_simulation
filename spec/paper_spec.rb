@@ -1,4 +1,5 @@
-require './lib/paper.rb'
+require_relative '../lib/paper.rb'
+require 'rspec'
 
 describe 'paper' do
 
