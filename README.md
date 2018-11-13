@@ -7,5 +7,6 @@ To run program:
 2. Use the command prompt, 'cd' or navigate to the directory of the application "....\application_kata_pencil_simulation-master" in most cases
 3. Run "bundle install"
 4. Navigate to the "spec" folder inside of the directory
-5. Run the files "pencil_spec.rb" and "paper_spec.rb"
+5. Run the following commands:
+ "rspec spec pencil_spec.rb" and "rspec spec paper_spec.rb"
 6. Results will be printed.
