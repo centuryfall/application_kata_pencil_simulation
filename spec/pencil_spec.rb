@@ -1,5 +1,6 @@
-require './lib/pencil.rb'
-require './lib/paper.rb'
+require_relative '../lib/pencil.rb'
+require_relative '../lib/paper.rb'
+require 'rspec'
 
 describe 'pencil' do
 
